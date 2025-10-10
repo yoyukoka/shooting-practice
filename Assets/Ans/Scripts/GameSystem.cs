@@ -15,7 +15,7 @@ namespace Ans
             if (!IsGameOver)
             {
                 survivalTime += Time.deltaTime;
-                scoreText.text = "Score: " + Mathf.FloorToInt(survivalTime);
+                scoreText.text = "Score: " + Mathf.FloorToInt(survivalTime) * 100;
             }
             else
             {

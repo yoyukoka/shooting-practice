@@ -12,15 +12,18 @@ public class GameSystem : MonoBehaviour
     {
         if (!IsGameOver)
         {
+            //課題5
+            // 生存時間を加算してスコア表示
+            // テキストにに"Score: "をつけて表示
             // **ここに処理を書く**
-            // ヒント1: survivalTime += Time.deltaTime;
-            // ヒント2: scoreText.text = "Score: " + Mathf.FloorToInt(survivalTime);
+            
         }
         else
         {
+            //課題5
             // ゲームオーバーパネルを表示
             // **ここに処理を書く**
-            // ヒント: gameOverPanel.SetActive(true);
+            
         }
     }
 
