@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                transform.position += Vector3.left * moveSpeed * Time.deltaTime;
+                transform.position += new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
             }
         }
 
@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         {
            if (Input.GetKey(KeyCode./*ここに書く*/) || Input.GetKey(KeyCode./*ここに書く*/))
             {
-                transform.position += Vector3./*ここに書く*/ * moveSpeed * Time.deltaTime;
+                transform.position += new Vector3(/*ここに書く*/) * moveSpeed * Time.deltaTime;
             }
         }
     }
