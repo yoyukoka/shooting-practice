@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unityハンズオン — 課題スライド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-space: #0a0e27;
+            --bg-dark: #1a1f3a;
+            --primary: #8b5cf6;
+            --secondary: #ec4899;
+            --accent: #fbbf24;
+            --text: #f9fafb;
+            --title-color: #f1f5f9;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-space) 0%, var(--bg-dark) 100%);
+            color: var(--text);
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .slide {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 4rem;
+            z-index: 1;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            background: transparent;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        .slide-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.2;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            -webkit-text-fill-color: var(--title-color) !important;
+            background-clip: initial !important;
+            color: var(--title-color) !important;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+        .slide-subtitle {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-top: -0.5rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+            color: var(--title-color) !important;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+        .emoji-big {
+            font-size: 8rem;
+            margin: 2rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .code-block {
+            background: rgba(30, 30, 60, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+            max-height: 55vh;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .blank {
+            color: #f472b6;
+            font-weight: bold;
+            background: rgba(244, 114, 182, 0.15);
+            padding: 0 0.2rem;
+            border-radius: 0.25rem;
+        }
+
+        .card {
+            background: rgba(30, 30, 60, 0.6);
+            border: 2px solid var(--primary);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        .term-box {
+            background: rgba(139, 92, 246, 0.2);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .thinking-time {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(236, 72, 153, 0.2));
+            border: 3px dashed var(--accent);
+            padding: 3rem;
+            border-radius: 2rem;
+            text-align: center;
+        }
+
+        .kadai-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 1rem;
+        }
+
+        .intro-text .name {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 0 0 1rem 0;
+            color: var(--title-color);
+        }
+
+        .intro-text p {
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .intro-text .name { font-size: 2rem; }
+            .intro-text p { font-size: 1.1rem; }
+        }
+
+        html, body {
+            background: linear-gradient(135deg, var(--bg-space) 0%, var(--bg-dark) 100%) !important;
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="progress-bar" id="progress"></div>
+
+    <div id="slides-container">
+
+        <!-- ===== 導入 ===== -->
+
+        <div class="slide active">
+            <div class="emoji-big">🚀✨</div>
+            <h1 class="slide-title">Unityで作る！<br>隕石回避ゲーム</h1>
+            <p class="slide-subtitle">～穴抜き問題で学ぶハンズオン～</p>
+            <div class="grid grid-cols-2 gap-8 text-xl mt-8">
+                <div class="card">
+                    <p class="text-primary font-bold text-2xl mb-2">⏰ 時間</p>
+                    <p>60〜90分</p>
+                </div>
+                <div class="card">
+                    <p class="text-primary font-bold text-2xl mb-2">🎯 形式</p>
+                    <p>穴抜き問題 × 5問</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="card max-w-4xl intro-text text-center">
+                <h1 class="name">自己紹介 — 宮﨑 航也</h1>
+                <p>🏫 近畿大学 情報学部 情報学科<br>サイバーセキュリティコース 4年</p>
+                <p>🔬 所属：毛利研</p>
+                <p>💻 Unity歴 約2年</p>
+                <p>🎮 好きなゲーム：ポケモンくらいしか通ってない</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">今日作るゲーム</h1>
+            <div class="card max-w-4xl">
+                <ul class="text-2xl space-y-5">
+                    <li>🕹️ プレイヤーを左右に動かす</li>
+                    <li>🌑 降ってくる隕石を避ける</li>
+                    <li>💥 当たったらゲームオーバー</li>
+                    <li>⏱️ 生き残った時間がスコアに！</li>
+                    <li>🔁 リトライボタンで再開</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">🛠️ 準備</h1>
+            <div class="card max-w-4xl">
+                <ol class="text-xl space-y-6">
+                    <li><span class="highlight">1.</span> リポジトリをクローン
+                        <div class="code-block mt-2 text-base">git clone [リポジトリURL]</div>
+                    </li>
+                    <li><span class="highlight">2.</span> Unity Hub → 「追加」→ フォルダを選択</li>
+                    <li><span class="highlight">3.</span> シーン <span class="highlight">code only</span> を開く</li>
+                    <li><span class="highlight">4.</span> <span class="highlight">Assets/Scripts/</span> 以下のファイルを編集していく</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">📋 今日の5つの課題</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+                <div class="card">
+                    <span class="kadai-badge">課題1</span>
+                    <p class="text-xl font-bold text-primary">Player.cs — 右移動</p>
+                    <p class="text-lg mt-2">左移動は完成済み。右移動の穴を埋める</p>
+                </div>
+                <div class="card">
+                    <span class="kadai-badge">課題2</span>
+                    <p class="text-xl font-bold text-primary">Meteorite.cs — 隕石の移動</p>
+                    <p class="text-lg mt-2">隕石を下方向に動かす</p>
+                </div>
+                <div class="card">
+                    <span class="kadai-badge">課題3</span>
+                    <p class="text-xl font-bold text-primary">Player.cs — 衝突判定</p>
+                    <p class="text-lg mt-2">隕石に当たったらゲームオーバー</p>
+                </div>
+                <div class="card">
+                    <span class="kadai-badge">課題4</span>
+                    <p class="text-xl font-bold text-primary">Reset() — リセット処理</p>
+                    <p class="text-lg mt-2">Player / Meteorite を初期状態に戻す</p>
+                </div>
+                <div class="card md:col-span-2">
+                    <span class="kadai-badge">課題5</span>
+                    <p class="text-xl font-bold text-primary">GameSystem.cs — スコア表示</p>
+                    <p class="text-lg mt-2">生存時間をスコアにして表示。ゲームオーバー画面も出す</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">✏️ 穴抜き問題の進め方</h1>
+            <div class="card max-w-5xl">
+                <div class="text-xl space-y-5">
+                    <p>1️⃣ スライドで<span class="highlight">目的とヒント</span>を確認</p>
+                    <p>2️⃣ Unity で該当ファイルを開き、<span class="highlight">/* ここに書く */</span> を埋める</p>
+                    <p>3️⃣ 保存 → 再生ボタン<span class="highlight">▶</span> で動作確認</p>
+                    <p>4️⃣ わからなければヒントスライド → 最後に答え合わせ</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg">💡 <span class="highlight">ResetButton.cs</span> は完成済み（触らなくてOK）</p>
+                    <p class="text-lg mt-2">💡 正解例は <span class="highlight">Assets/Ans/Scripts/</span> にあります</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">📁 編集するファイル</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block text-base">Assets/Scripts/
+├── Player.cs      ← 課題1, 3, 4
+├── Meteorite.cs   ← 課題2, 4
+├── GameSystem.cs  ← 課題5
+└── ResetButton.cs ← 完成済み（触らない）</div>
+                <div class="term-box mt-6">
+                    <p class="text-lg"><span class="highlight">void Update()</span> … 毎フレーム実行（移動・入力）</p>
+                    <p class="text-lg mt-2"><span class="highlight">void Start()</span> … 最初に1回だけ（初期位置の保存など）</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 課題1: 右移動 ===== -->
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">プレイヤーを右に動かす</h1>
+            <div class="emoji-big">🕹️</div>
+            <div class="card max-w-4xl">
+                <h3 class="text-3xl text-center mb-6">目標：D / → キーで右移動</h3>
+                <div class="text-xl space-y-4">
+                    <p>✅ 左移動のコードは<span class="highlight">すでに書いてある</span></p>
+                    <p>📝 右移動の部分だけ穴を埋める</p>
+                    <p>📄 ファイル：<span class="highlight">Player.cs</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">⌨️ Input.GetKey()とは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">キーが<span class="highlight">押されている間</span>、true を返す</p>
+                <div class="code-block">if (Input.GetKey(KeyCode.A)) {
+    <span class="text-yellow-400">// Aキーが押されている間、ずっと実行</span>
+}</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">上の例は<span class="highlight">左移動</span>（Aキー）の書き方</p>
+                    <p class="text-lg mt-2">右移動では、対になるキーや矢印キーの KeyCode を使う</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">📍 移動の書き方</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">transform.position += new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
+<span class="text-yellow-400">// 左：x = -1</span></div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">右方向へ動かすとき、x の値はどうなる？</p>
+                    <p class="text-lg mt-2"><span class="highlight">Time.deltaTime</span> をかけると、PCの性能に関係なく一定速度で動く</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">穴抜き問題</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-4">Player.cs — 右移動部分（ピンクが穴）</p>
+                <div class="code-block">if (this.gameObject.transform.position.x &lt; 8)
+{
+    if (Input.GetKey(KeyCode.<span class="blank">/* ここに書く */</span>)
+     || Input.GetKey(KeyCode.<span class="blank">/* ここに書く */</span>))
+    {
+        transform.position += new Vector3(<span class="blank">/* ここに書く */</span>)
+                              * moveSpeed * Time.deltaTime;
+    }
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">🤔 考えてみよう！</h1>
+            <div class="thinking-time">
+                <div class="emoji-big" style="margin: 0;">🧠</div>
+                <p class="text-4xl mb-8 text-accent">Player.cs の穴を埋めよう</p>
+                <div class="text-2xl space-y-4">
+                    <p>💡 左移動のコードをそのまま参考にできる</p>
+                    <p>💡 左移動では A と ← を使っている → 右方向のキーは？</p>
+                    <p>💡 Vector3 の x は、左と<span class="highlight">符号が逆</span>になるはず</p>
+                </div>
+                <p class="text-3xl mt-8 text-primary">制限時間：5分</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">💡 ヒント</h1>
+            <div class="card max-w-5xl">
+                <div class="text-xl space-y-4">
+                    <p>🔑 左移動で使っている KeyCode を見て、<span class="highlight">右キー</span>はどれ？</p>
+                    <p>📍 左移動では x が <span class="highlight">-1</span> → 右方向なら x は？</p>
+                    <p>📝 KeyCode. と打つと、Unity の候補一覧が出る</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">✅ 答え合わせ</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">if (this.gameObject.transform.position.x &lt; 8)
+{
+    if (Input.GetKey(KeyCode.<span class="highlight">D</span>)
+     || Input.GetKey(KeyCode.<span class="highlight">RightArrow</span>))
+    {
+        transform.position += new Vector3(<span class="highlight">1, 0, 0</span>)
+                              * moveSpeed * Time.deltaTime;
+    }
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題1</span>
+            <h1 class="slide-title">🎮 動作確認</h1>
+            <div class="card max-w-4xl">
+                <ol class="text-xl space-y-4">
+                    <li><span class="highlight">1.</span> Player.cs を Player にアタッチ済みか確認</li>
+                    <li><span class="highlight">2.</span> 再生ボタン ▶ を押す</li>
+                    <li><span class="highlight">3.</span> A/D または ←/→ で左右に動くか確認</li>
+                </ol>
+                <div class="thinking-time mt-8">
+                    <p class="text-2xl">動いたら 課題1 クリア！🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 課題2: 隕石の移動 ===== -->
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">隕石を下に動かす</h1>
+            <div class="emoji-big">☄️</div>
+            <div class="card max-w-4xl">
+                <h3 class="text-3xl text-center mb-6">目標：隕石が上から降ってくる</h3>
+                <div class="text-xl space-y-4">
+                    <p>📄 ファイル：<span class="highlight">Meteorite.cs</span></p>
+                    <p>⬇️ y座標を減らす = 下方向へ移動</p>
+                    <p>⏸️ ゲームオーバー中は動かない（すでに書いてある）</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">穴抜き問題</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-4">Meteorite.cs — 下方向への移動</p>
+                <div class="code-block">void Update()
+{
+    if (GameSystem.IsGameOver) { return; }
+
+    <span class="text-yellow-400">// 下方向に移動</span>
+    transform.position += new Vector3(<span class="blank">/* ここに書く */</span>)
+                          * speed * Time.deltaTime;
+
+    <span class="text-yellow-400">// 画面外に出たら非表示（完成済み）</span>
+    if (transform.position.y &lt; destroyHeight)
+    {
+        this.gameObject.SetActive(false);
+    }
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">🤔 考えてみよう！</h1>
+            <div class="thinking-time">
+                <div class="emoji-big" style="margin: 0;">🧠</div>
+                <p class="text-4xl mb-8 text-accent">Meteorite.cs の穴を埋めよう</p>
+                <div class="text-2xl space-y-4">
+                    <p>💡 課題1 と同じ <span class="highlight">new Vector3(...)</span> の書き方</p>
+                    <p>💡 「下に動く」= どの座標を変える？</p>
+                    <p>💡 動かさない軸は <span class="highlight">0</span> にする</p>
+                </div>
+                <p class="text-3xl mt-8 text-primary">制限時間：5分</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">💡 ヒント</h1>
+            <div class="card max-w-5xl">
+                <div class="text-xl space-y-4">
+                    <p>📍 課題1は x 方向 → 今回は<span class="highlight">どの軸</span>を変える？</p>
+                    <p>⬇️ 画面の「下」は、y が大きくなる？<span class="highlight">小さくなる？</span></p>
+                    <p>📝 new Vector3(?, ?, ?) の <span class="highlight">3つの数</span>を考えてみよう</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">✅ 答え合わせ</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">transform.position += new Vector3(<span class="highlight">0, -1, 0</span>)
+                          * speed * Time.deltaTime;</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">別解：<span class="highlight">Vector3.down</span> でもOK（正解例参照）</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題2</span>
+            <h1 class="slide-title">🎮 動作確認</h1>
+            <div class="card max-w-4xl">
+                <div class="text-xl space-y-4">
+                    <p>✅ 隕石が上から下に動く</p>
+                    <p>✅ 画面下に出たら消える</p>
+                </div>
+                <div class="thinking-time mt-8">
+                    <p class="text-2xl">動いたら 課題2 クリア！🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 課題3: 衝突判定 ===== -->
+
+        <div class="slide">
+            <span class="kadai-badge">課題3</span>
+            <h1 class="slide-title">衝突判定</h1>
+            <div class="emoji-big">💥</div>
+            <div class="card max-w-4xl">
+                <h3 class="text-3xl text-center mb-6">目標：隕石に当たったらゲームオーバー</h3>
+                <div class="text-xl space-y-4">
+                    <p>📄 ファイル：<span class="highlight">Player.cs</span> の OnCollisionEnter2D</p>
+                    <p>🏷️ 隕石には <span class="highlight">Falling</span> タグが付いている</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">💥 OnCollisionEnter2D</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6"><span class="highlight">ぶつかった瞬間</span>に自動で呼ばれる関数</p>
+                <div class="code-block">void OnCollisionEnter2D(Collision2D collision)
+{
+    if (collision.gameObject.CompareTag("Falling"))
+    {
+        <span class="text-yellow-400">// ここに処理を書く</span>
+    }
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">🔧 Componentの設定</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-6 text-accent">コードだけでは当たり判定は動きません！Inspector も確認</p>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-4">Player</p>
+                        <ul class="text-lg space-y-2">
+                            <li>✅ Rigidbody2D（Gravity Scale = 0）</li>
+                            <li>✅ BoxCollider2D</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-4">隕石</p>
+                        <ul class="text-lg space-y-2">
+                            <li>✅ Tag → <span class="highlight">Falling</span></li>
+                            <li>✅ Rigidbody2D（Gravity Scale = 0）</li>
+                            <li>✅ CircleCollider2D</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">📴 SetActive(false) とは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">オブジェクトを<span class="highlight">非表示</span>にする</p>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-2">SetActive(false)</p>
+                        <p class="text-lg">消えるが<span class="highlight">後で復活</span>できる</p>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-2">Destroy()</p>
+                        <p class="text-lg">完全削除（<span class="highlight">復活不可</span>）</p>
+                    </div>
+                </div>
+                <div class="term-box">
+                    <p class="text-lg">課題3では衝突した<span class="highlight">プレイヤーと隕石</span>を非表示にする</p>
+                    <p class="text-lg mt-2">課題4の Reset() で再表示できる</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題3</span>
+            <h1 class="slide-title">穴抜き問題</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-4">Player.cs — 衝突時の処理（3つの穴）</p>
+                <div class="code-block">if (collision.gameObject.CompareTag("Falling"))
+{
+    GameSystem.IsGameOver = <span class="blank">/* true または false */</span>;
+    this.gameObject.SetActive(<span class="blank">/* true または false */</span>);
+    collision.gameObject.SetActive(<span class="blank">/* true または false */</span>);
+}</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">やること：① ゲームオーバーにする ② プレイヤーを消す ③ 隕石を消す</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題3</span>
+            <h1 class="slide-title">🤔 考えてみよう！</h1>
+            <div class="thinking-time">
+                <div class="emoji-big" style="margin: 0;">🧠</div>
+                <p class="text-4xl mb-8 text-accent">3つの穴を埋めよう</p>
+                <div class="text-2xl space-y-4">
+                    <p>💡 コメントに書いてある 3 つの処理を順番に</p>
+                    <p>💡 ゲームオーバー = IsGameOver フラグを立てる</p>
+                    <p>💡 「非表示」は SetActive のどちらを使う？</p>
+                </div>
+                <p class="text-3xl mt-8 text-primary">制限時間：5分</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題3</span>
+            <h1 class="slide-title">✅ 答え合わせ</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">GameSystem.IsGameOver = <span class="highlight">true</span>;
+this.gameObject.SetActive(<span class="highlight">false</span>);
+collision.gameObject.SetActive(<span class="highlight">false</span>);</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題3</span>
+            <h1 class="slide-title">🎮 動作確認</h1>
+            <div class="card max-w-4xl">
+                <ol class="text-xl space-y-4">
+                    <li><span class="highlight">1.</span> わざと隕石に当たる</li>
+                    <li><span class="highlight">2.</span> プレイヤーと隕石が消える</li>
+                    <li><span class="highlight">3.</span> 操作できなくなる（IsGameOver = true）</li>
+                </ol>
+                <div class="thinking-time mt-8">
+                    <p class="text-2xl">全部OKなら 課題3 クリア！🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 課題4: リセット ===== -->
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">リセット処理</h1>
+            <div class="emoji-big">🔁</div>
+            <div class="card max-w-4xl">
+                <h3 class="text-3xl text-center mb-6">目標：もう一度プレイできるようにする</h3>
+                <div class="text-xl space-y-4">
+                    <p>📄 <span class="highlight">Player.cs</span> の Reset()</p>
+                    <p>📄 <span class="highlight">Meteorite.cs</span> の Reset()</p>
+                    <p>🔘 ボタン処理は <span class="highlight">ResetButton.cs</span>（完成済み）</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">💡 Start() で保存した変数</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">Meteorite.cs は Start() で初期位置を保存している</p>
+                <div class="code-block">void Start()
+{
+    posX = this.gameObject.transform.position.x;
+    posY = this.gameObject.transform.position.y;
+}
+
+public void Reset()
+{
+    transform.position = new Vector3(<span class="blank">/* ここに書く（難問） */</span>);
+    this.gameObject.SetActive(<span class="blank">/* true または false */</span>);
+}</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">Reset() では <span class="highlight">posX</span> と <span class="highlight">posY</span> を使って元の位置に戻す</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">穴抜き問題 — Player</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">public void Reset()
+{
+    <span class="text-yellow-400">// 初期位置（完成済み）</span>
+    this.gameObject.transform.position = new Vector3(0, -3, 0);
+    this.gameObject.SetActive(<span class="blank">/* true または false */</span>);
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">穴抜き問題 — Meteorite</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">public void Reset()
+{
+    transform.position = new Vector3(<span class="blank">/* ここに書く（難問） */</span>);
+    this.gameObject.SetActive(<span class="blank">/* true または false */</span>);
+}</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">💡 Start() で保存した <span class="highlight">posX, posY</span> を Vector3 に入れる</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">🤔 考えてみよう！</h1>
+            <div class="thinking-time">
+                <div class="emoji-big" style="margin: 0;">🧠</div>
+                <p class="text-4xl mb-8 text-accent">Reset() の穴を埋めよう</p>
+                <div class="text-2xl space-y-4">
+                    <p>💡 Reset = 消えたオブジェクトを<span class="highlight">もう一度使える</span>状態に</p>
+                    <p>💡 Start() で保存した変数、使える場面は？</p>
+                    <p>💡 SetActive は課題3 の<span class="highlight">逆の操作</span>になる</p>
+                </div>
+                <p class="text-3xl mt-8 text-primary">制限時間：7分</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">✅ 答え合わせ</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-4 font-bold text-primary">Player.cs</p>
+                <div class="code-block mb-6">this.gameObject.SetActive(<span class="highlight">true</span>);</div>
+                <p class="text-xl mb-4 font-bold text-primary">Meteorite.cs</p>
+                <div class="code-block">transform.position = new Vector3(<span class="highlight">posX, posY, 0</span>);
+this.gameObject.SetActive(<span class="highlight">true</span>);</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題4</span>
+            <h1 class="slide-title">🎮 動作確認</h1>
+            <div class="card max-w-4xl">
+                <ol class="text-xl space-y-4">
+                    <li><span class="highlight">1.</span> ゲームオーバーになる</li>
+                    <li><span class="highlight">2.</span> リトライボタンを押す</li>
+                    <li><span class="highlight">3.</span> プレイヤー・隕石が元に戻る</li>
+                    <li><span class="highlight">4.</span> もう一度プレイできる</li>
+                </ol>
+                <div class="thinking-time mt-8">
+                    <p class="text-2xl">動いたら 課題4 クリア！🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 課題5: スコア ===== -->
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">スコアシステム</h1>
+            <div class="emoji-big">⏱️</div>
+            <div class="card max-w-4xl">
+                <h3 class="text-3xl text-center mb-6">目標：生存時間をスコア表示</h3>
+                <div class="text-xl space-y-4">
+                    <p>📄 ファイル：<span class="highlight">GameSystem.cs</span></p>
+                    <p>⏱️ 生存時間 × 100 = スコア</p>
+                    <p>📺 ゲームオーバー時にパネルを表示</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">🎮 GameSystem の役割</h1>
+            <div class="card max-w-5xl">
+                <div class="text-xl space-y-4 mb-6">
+                    <p>🚦 ゲームオーバーかどうか（<span class="highlight">IsGameOver</span>）</p>
+                    <p>📊 スコアの計測と表示</p>
+                    <p>🖼️ ゲームオーバー画面の表示</p>
+                </div>
+                <div class="code-block">private float survivalTime = 0f;
+
+if (!IsGameOver) {
+    survivalTime += Time.deltaTime;  <span class="text-yellow-400">// 時間を加算</span>
+    scoreText.text = "Score: " + ...; <span class="text-yellow-400">// 表示</span>
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">穴抜き問題</h1>
+            <div class="card max-w-5xl">
+                <p class="text-xl mb-4">GameSystem.cs — Update()</p>
+                <div class="code-block">if (!IsGameOver)
+{
+    <span class="text-yellow-400">// 生存時間を加算</span>
+    survivalTime += Time.<span class="blank">/* ここに書く */</span>;
+    scoreText.text = "Score: " + Mathf.FloorToInt(<span class="blank">/* ここに書く */</span>) * 100;
+}
+else
+{
+    <span class="text-yellow-400">// ゲームオーバーパネルを表示</span>
+    gameOverPanel.SetActive(<span class="blank">/* ここに書く */</span>);
+}</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">🤔 考えてみよう！</h1>
+            <div class="thinking-time">
+                <div class="emoji-big" style="margin: 0;">🧠</div>
+                <p class="text-4xl mb-8 text-accent">GameSystem.cs の穴を埋めよう</p>
+                <div class="text-2xl space-y-4">
+                    <p>💡 毎フレーム「時間を足す」→ Time. の後は？</p>
+                    <p>💡 スコア計算に使う<span class="highlight">float 型の変数</span>はどれ？</p>
+                    <p>💡 パネルは最初 non-active → 出すときは SetActive(???)</p>
+                </div>
+                <p class="text-3xl mt-8 text-primary">制限時間：5分</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">💡 ヒント</h1>
+            <div class="card max-w-5xl">
+                <div class="text-xl space-y-4">
+                    <p>⏱️ Time. のあとに続く、<span class="highlight">1フレームの長さ</span>を表す名前は？</p>
+                    <p>📊 FloorToInt() に渡すのは、上で定義した<span class="highlight">どの変数</span>？</p>
+                    <p>📺 SetActive() は「表示する / しない」を切り替える → パネルを<span class="highlight">出したい</span>ときは？</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">✅ 答え合わせ</h1>
+            <div class="card max-w-5xl">
+                <div class="code-block">survivalTime += Time.<span class="highlight">deltaTime</span>;
+scoreText.text = "Score: " + Mathf.FloorToInt(<span class="highlight">survivalTime</span>) * 100;
+
+gameOverPanel.SetActive(<span class="highlight">true</span>);</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <span class="kadai-badge">課題5</span>
+            <h1 class="slide-title">🎮 動作確認</h1>
+            <div class="card max-w-4xl">
+                <div class="text-xl space-y-4">
+                    <p>✅ 画面にスコアが表示される</p>
+                    <p>✅ 時間が経つとスコアが増える</p>
+                    <p>✅ ゲームオーバーでスコアが止まる</p>
+                    <p>✅ ゲームオーバー画面が出る</p>
+                </div>
+                <div class="thinking-time mt-8">
+                    <p class="text-2xl">全部OKなら 課題5 クリア！🎉</p>
+                    <p class="text-lg text-gray-400 mt-4">全課題クリアおめでとう！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== まとめ ===== -->
+
+        <div class="slide">
+            <h1 class="slide-title">🚨 よくあるミス</h1>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-6xl text-lg">
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-2">動かない！</p>
+                    <p>✅ スクリプトはアタッチした？<br>✅ Time.deltaTime を掛けてる？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-2">当たらない！</p>
+                    <p>✅ Collider2D / Rigidbody2D はある？<br>✅ Gravity Scale = 0？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-2">ゲームオーバーにならない！</p>
+                    <p>✅ タグは「Falling」？<br>✅ CompareTag のスペルは合ってる？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-2">スコアが出ない！</p>
+                    <p>✅ Inspector で scoreText を設定した？<br>✅ gameOverPanel も設定した？</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">🎉 今日覚えたこと</h1>
+            <div class="card max-w-4xl">
+                <ul class="text-xl space-y-3">
+                    <li>✅ Input.GetKey() — キー入力</li>
+                    <li>✅ transform.position — 座標変更</li>
+                    <li>✅ Time.deltaTime — フレーム独立の移動</li>
+                    <li>✅ SetActive — 表示 / 非表示</li>
+                    <li>✅ OnCollisionEnter2D — 衝突検出</li>
+                    <li>✅ CompareTag — タグ判定</li>
+                    <li>✅ Mathf.FloorToInt — 整数変換</li>
+                </ul>
+            </div>
+            <p class="text-accent text-2xl mt-10">お疲れ様でした！🚀</p>
+        </div>
+
+    </div>
+
+    <button id="btn-fullscreen" class="fixed top-3 right-3 z-[150] px-3 py-1 rounded-md text-sm font-bold bg-purple-700/60 hover:bg-purple-600/80 backdrop-blur border border-purple-400/40 shadow-lg transition">
+        ⛶
+    </button>
+
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function updateSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides.forEach((slide) => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            progress.style.width = ((index + 1) / totalSlides * 100) + '%';
+            currentSlide = index;
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                const el = document.documentElement;
+                (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen)?.call(el);
+            } else {
+                (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen)?.call(document);
+            }
+        }
+
+        const fsBtn = document.getElementById('btn-fullscreen');
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'f') toggleFullscreen();
+            if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) updateSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft' && currentSlide > 0) updateSlide(currentSlide - 1);
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            fsBtn.textContent = document.fullscreenElement ? '✕' : '⛶';
+            if (document.fullscreenElement) window.scrollTo(0, 0);
+        });
+
+        updateSlide(0);
+        console.log(`総スライド数: ${totalSlides}`);
+    </script>
+</body>
+</html>
