@@ -24,9 +24,8 @@ public class Meteorite : MonoBehaviour
         //課題2
         // 下方向に移動
         // **ここに処理を書く**
-        transform.position += new Vector3(0,-1,0) * speed * Time.deltaTime;
+        transform.position += new Vector3(/*ここに書く*/) * speed * Time.deltaTime;
 
-        //課題2
         // 隕石が消えるY座標を下回ったら非表示
         if (transform.position.y < destroyHeight)
         {
