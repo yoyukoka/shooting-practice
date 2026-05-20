@@ -6,20 +6,20 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        // 課題1
-        // ゲームオーバーの時は何もしない、即リターン
-        // GameSystem.csのisGameOverを参照
-        // **ここに処理を書く**
+        if (GameSystem.IsGameOver)
+        {
+            return;
+        }
 
 
-        // 課題1
         // 左にx座標移動
         // Aまたは左キーで移動
         if (-8 < this.gameObject.transform.position.x)
         {
-            // **ここに処理を書く**
-
-
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                transform.position += Vector3.left * moveSpeed * Time.deltaTime;
+            }
         }
 
         //課題1
@@ -27,9 +27,10 @@ public class Player : MonoBehaviour
         // Dまたは右キーで移動
         if (this.gameObject.transform.position.x < 8)
         {
-            // **ここに処理を書く**
-
-
+           if (Input.GetKey(KeyCode./*ここに書く*/) || Input.GetKey(KeyCode./*ここに書く*/))
+            {
+                transform.position += Vector3./*ここに書く*/ * moveSpeed * Time.deltaTime;
+            }
         }
     }
 
