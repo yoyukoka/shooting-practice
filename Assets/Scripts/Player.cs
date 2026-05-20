@@ -41,20 +41,17 @@ public class Player : MonoBehaviour
         // Fallingタグのオブジェクトと衝突した時
         if (collision.gameObject.CompareTag("Falling"))
         {
-            //課題3
-            // 1. ゲームオーバーにする
-            // 2. プレイヤーを非表示にする
-            // 3. 隕石を非表示にする
-            // **ここに処理を書く**
-
-
-
+            GameSystem.IsGameOver = /* true または false */;
+            this.gameObject.SetActive(/* true または false */);
+            collision.gameObject.SetActive(/* true または false */);
         }
     }
 
     public void Reset()
     {
-        this.gameObject.transform.position = new Vector3(0, -2, 0);
-        this.gameObject.SetActive(true);
+        //課題4
+        // プレイヤーを初期位置に戻す
+        this.gameObject.transform.position = new Vector3(0, -3, 0);
+        this.gameObject.SetActive(/* true または false */);
     }
 }

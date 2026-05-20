@@ -35,7 +35,9 @@ public class Meteorite : MonoBehaviour
 
     public void Reset()
     {
-        this.gameObject.SetActive(true);
-        transform.position = new Vector3(posX, posY, 0);
+        //課題4
+        // 隕石を初期位置に戻す
+        transform.position = new Vector3(/*ここに書く（難問）*/);
+        this.gameObject.SetActive(/* true または false */);
     }
 }
