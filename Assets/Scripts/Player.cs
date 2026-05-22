@@ -25,13 +25,13 @@ public class Player : MonoBehaviour
         //課題1
         // 右にx座標移動
         // Dまたは右キーで移動
-        if (this.gameObject.transform.position.x < 8)
-        {
-           if (Input.GetKey(KeyCode./*ここに書く*/) || Input.GetKey(KeyCode./*ここに書く*/))
-            {
-                transform.position += new Vector3(/*ここに書く*/) * moveSpeed * Time.deltaTime;
-            }
-        }
+        // if (this.gameObject.transform.position.x < 8)
+        // {
+        //    if (Input.GetKey(KeyCode./*ここに書く*/) || Input.GetKey(KeyCode./*ここに書く*/))
+        //     {
+        //         transform.position += new Vector3(/*ここに書く*/) * moveSpeed * Time.deltaTime;
+        //     }
+        // }
     }
 
 
@@ -41,9 +41,9 @@ public class Player : MonoBehaviour
         // Fallingタグのオブジェクトと衝突した時
         if (collision.gameObject.CompareTag("Falling"))
         {
-            GameSystem.IsGameOver = /* true または false */;
-            this.gameObject.SetActive(/* true または false */);
-            collision.gameObject.SetActive(/* true または false */);
+            // GameSystem.IsGameOver = /* true または false */;
+            // this.gameObject.SetActive(/* true または false */);
+            // collision.gameObject.SetActive(/* true または false */);
         }
     }
 
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     {
         //課題4
         // プレイヤーを初期位置に戻す
-        this.gameObject.transform.position = new Vector3(0, -3, 0);
-        this.gameObject.SetActive(/* true または false */);
+        // this.gameObject.transform.position = new Vector3(0, -3, 0);
+        // this.gameObject.SetActive(/* true または false */);
     }
 }

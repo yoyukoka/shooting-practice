@@ -24,7 +24,7 @@ public class Meteorite : MonoBehaviour
         //課題2
         // 下方向に移動
         // **ここに処理を書く**
-        transform.position += new Vector3(/*ここに書く*/) * speed * Time.deltaTime;
+        // transform.position += new Vector3(/*ここに書く*/) * speed * Time.deltaTime;
 
         // 隕石が消えるY座標を下回ったら非表示
         if (transform.position.y < destroyHeight)
@@ -37,7 +37,7 @@ public class Meteorite : MonoBehaviour
     {
         //課題4
         // 隕石を初期位置に戻す
-        transform.position = new Vector3(/*ここに書く（難問）*/);
-        this.gameObject.SetActive(/* true または false */);
+        // transform.position = new Vector3(/*ここに書く（難問）*/);
+        // this.gameObject.SetActive(/* true または false */);
     }
 }
