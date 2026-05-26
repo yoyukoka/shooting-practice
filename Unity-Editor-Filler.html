@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unityエディタ操作（予備スライド）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-space: #0a0e27;
+            --bg-dark: #1a1f3a;
+            --primary: #8b5cf6;
+            --secondary: #ec4899;
+            --accent: #fbbf24;
+            --text: #f9fafb;
+            --title-color: #f1f5f9;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-space) 0%, var(--bg-dark) 100%);
+            color: var(--text);
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .slide {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 4rem;
+            z-index: 1;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            background: transparent;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        .slide-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.2;
+            color: var(--title-color) !important;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+        .slide-subtitle {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-top: -0.5rem;
+            color: var(--accent);
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .emoji-big {
+            font-size: 8rem;
+            margin: 2rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .code-block {
+            background: rgba(30, 30, 60, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            white-space: pre;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+            max-height: 50vh;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .card {
+            background: rgba(30, 30, 60, 0.6);
+            border: 2px solid var(--primary);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        .term-box {
+            background: rgba(139, 92, 246, 0.2);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+
+        html, body {
+            background: linear-gradient(135deg, var(--bg-space) 0%, var(--bg-dark) 100%) !important;
+            min-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="progress-bar" id="progress"></div>
+
+    <button id="btn-fullscreen" class="fixed top-3 right-3 z-[150] px-3 py-1 rounded-md text-sm font-bold bg-purple-700/60 hover:bg-purple-600/80 backdrop-blur border border-purple-400/40 shadow-lg transition">
+        ⛶
+    </button>
+
+    <div id="slides-container">
+
+        <!-- 1: タイトル -->
+        <div class="slide active">
+            <div class="emoji-big">🔧</div>
+            <h1 class="slide-title">Unityエディタ操作<br>予備スライド</h1>
+            <p class="slide-subtitle">コード作業が早く終わったとき用</p>
+            <div class="card max-w-3xl text-center mt-4">
+                <p class="text-xl">コンポーネント・コライダー・タグなど<br>Inspectorでの設定を確認しよう</p>
+                <p class="text-gray-400 mt-4 text-lg">← → キーでスライド切り替え　/　F で全画面</p>
+            </div>
+        </div>
+
+        <!-- 2: Unity画面説明導入 -->
+        <div class="slide">
+            <div class="emoji-big">🖥️</div>
+            <h1 class="slide-title">Unityの画面を見てみよう</h1>
+            <p class="text-3xl text-center">まずは5つのウィンドウを覚えましょう</p>
+        </div>
+
+        <!-- 3: Scene -->
+        <div class="slide">
+            <h1 class="slide-title">Scene (シーン)</h1>
+            <div class="card max-w-5xl">
+                <div class="text-6xl text-center mb-6">📐</div>
+                <p class="text-3xl text-center mb-8">ゲームの<span class="highlight">設計図</span></p>
+                <div class="text-xl space-y-4">
+                    <p>✏️ オブジェクトを配置・編集する場所</p>
+                    <p>🎨 ゲームの見た目を作り込む画面</p>
+                    <p>🔍 拡大・縮小・回転して色々な角度から見られる</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg"><span class="highlight">用語：</span>Scene（シーン）= ゲームの1画面のこと。タイトル画面、ゲーム画面などを分けて作る</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4: Game -->
+        <div class="slide">
+            <h1 class="slide-title">Game (ゲーム)</h1>
+            <div class="card max-w-5xl">
+                <div class="text-6xl text-center mb-6">🎮</div>
+                <p class="text-3xl text-center mb-8">実際に<span class="highlight">プレイする画面</span></p>
+                <div class="text-xl space-y-4">
+                    <p>▶️ 再生ボタンを押すとここでゲームが動く</p>
+                    <p>👀 プレイヤーが実際に見る画面そのまま</p>
+                    <p>🎥 カメラの視点で表示される</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg"><span class="highlight">豆知識：</span>Sceneは作業画面、Gameは完成品プレビュー！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5: Hierarchy -->
+        <div class="slide">
+            <h1 class="slide-title">Hierarchy (ヒエラルキー)</h1>
+            <div class="card max-w-5xl">
+                <div class="text-6xl text-center mb-6">📋</div>
+                <p class="text-3xl text-center mb-8">シーン内の<span class="highlight">オブジェクト一覧</span></p>
+                <div class="text-xl space-y-4">
+                    <p>📦 シーンに配置された全てのオブジェクトが表示される</p>
+                    <p>🌳 親子関係（階層構造）で整理できる</p>
+                    <p>👆 クリックすると、そのオブジェクトを選択できる</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg"><span class="highlight">用語：</span>Hierarchy（階層）= ものの並び順や親子関係のこと</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6: Inspector -->
+        <div class="slide">
+            <h1 class="slide-title">Inspector (インスペクター)</h1>
+            <div class="card max-w-5xl">
+                <div class="text-6xl text-center mb-6">🔧</div>
+                <p class="text-3xl text-center mb-8">オブジェクトの<span class="highlight">詳細設定画面</span></p>
+                <div class="text-xl space-y-4">
+                    <p>⚙️ 選択中のオブジェクトの設定を表示・編集</p>
+                    <p>📊 位置、大きさ、色など全ての設定がここに</p>
+                    <p>🔌 Component（機能パーツ）を追加・削除できる</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg"><span class="highlight">用語：</span>Inspector（検査官）= オブジェクトの中身を詳しく見る・いじる場所</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7: Project -->
+        <div class="slide">
+            <h1 class="slide-title">Project (プロジェクト)</h1>
+            <div class="card max-w-5xl">
+                <div class="text-6xl text-center mb-6">📁</div>
+                <p class="text-3xl text-center mb-8">プロジェクト内の<span class="highlight">全ファイル管理</span></p>
+                <div class="text-xl space-y-4">
+                    <p>🗂️ 画像、音声、スクリプトなど全ての素材がここに</p>
+                    <p>📂 フォルダで整理できる（Windowsのエクスプローラーみたいなもの）</p>
+                    <p>🎨 ここから素材をシーンにドラッグ&ドロップして使う</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8: GameObjectとComponent -->
+        <div class="slide">
+            <h1 class="slide-title">📦 GameObjectとComponent</h1>
+            <div class="grid grid-cols-2 gap-12 w-full max-w-6xl">
+                <div class="card">
+                    <div class="text-6xl text-center mb-4">📦</div>
+                    <h3 class="text-3xl font-bold text-primary mb-4 text-center">GameObject</h3>
+                    <p class="text-xl text-center mb-4">ゲーム内の「モノ」</p>
+                    <p class="text-lg text-gray-400 text-center">プレイヤー、敵、カメラなど<br>全てがGameObject</p>
+                    <div class="term-box mt-4">
+                        <p class="text-sm">空の箱のようなもの。機能を持たせるにはComponentを追加する</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-6xl text-center mb-4">🔧</div>
+                    <h3 class="text-3xl font-bold text-primary mb-4 text-center">Component</h3>
+                    <p class="text-xl text-center mb-4">機能を追加するパーツ</p>
+                    <p class="text-lg text-gray-400 text-center">見た目、物理、スクリプトなど<br>機能を組み合わせる</p>
+                    <div class="term-box mt-4">
+                        <p class="text-sm">例：SpriteRenderer（見た目）、Rigidbody2D（物理）、自作スクリプト（動き）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9: Componentの追加方法 -->
+        <div class="slide">
+            <h1 class="slide-title">➕ Componentの追加・削除</h1>
+            <div class="card max-w-5xl">
+                <h3 class="text-2xl mb-6 text-center">Inspectorでの基本操作</h3>
+                <ol class="text-xl space-y-4">
+                    <li><span class="highlight">1.</span> Hierarchyでオブジェクトを選択する</li>
+                    <li><span class="highlight">2.</span> Inspector下部の <span class="highlight">Add Component</span> をクリック</li>
+                    <li><span class="highlight">3.</span> 検索欄に名前を入力（例：<span class="highlight">Rigidbody 2D</span>）</li>
+                    <li><span class="highlight">4.</span> 一覧から選んで追加</li>
+                </ol>
+                <div class="term-box mt-6">
+                    <p class="text-lg">🗑️ 不要なComponentは、右上の <span class="highlight">︙</span> メニュー → <span class="highlight">Remove Component</span> で削除</p>
+                    <p class="text-sm text-gray-400 mt-2">スクリプトは Project からオブジェクトへドラッグ&ドロップでもアタッチできる</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10: 衝突判定の概要 -->
+        <div class="slide">
+            <h1 class="slide-title">💥 衝突判定に必要なもの</h1>
+            <div class="emoji-big">🔲⚛️</div>
+            <div class="card max-w-4xl">
+                <div class="text-xl space-y-4">
+                    <p>🔲 <span class="highlight">Collider2D</span> で当たり判定の形を作る</p>
+                    <p>⚛️ <span class="highlight">Rigidbody2D</span> で物理演算を有効化</p>
+                    <p>🏷️ <span class="highlight">Tag</span> で隕石かどうか判定（Inspectorで設定）</p>
+                </div>
+                <div class="term-box mt-6">
+                    <p class="text-lg">💡 衝突を検出するには、Collider2DとRigidbody2Dの<span class="highlight">両方</span>が必要なことが多い</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11: Collider2D詳細 -->
+        <div class="slide">
+            <h1 class="slide-title">🔲 Collider2Dとは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">当たり判定の<span class="highlight">形</span>を定義するComponent</p>
+                <div class="grid grid-cols-3 gap-6 mb-6">
+                    <div class="bg-purple-900 bg-opacity-30 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">⬜</div>
+                        <p class="text-lg">BoxCollider2D</p>
+                        <p class="text-sm text-gray-400">四角形</p>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">⭕</div>
+                        <p class="text-lg">CircleCollider2D</p>
+                        <p class="text-sm text-gray-400">円形</p>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">🔷</div>
+                        <p class="text-lg">PolygonCollider2D</p>
+                        <p class="text-sm text-gray-400">複雑な形</p>
+                    </div>
+                </div>
+                <div class="term-box">
+                    <p class="text-lg">💡 今回は<span class="highlight">BoxCollider2D</span>（プレイヤー）と<span class="highlight">CircleCollider2D</span>（隕石）を使います</p>
+                    <p class="text-sm text-gray-400 mt-2">Sceneビューで緑の枠線が当たり判定の範囲。Edit Colliderで形を調整できる</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12: Rigidbody2D詳細 -->
+        <div class="slide">
+            <h1 class="slide-title">⚛️ Rigidbody2Dとは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">物理演算を<span class="highlight">有効化</span>するComponent</p>
+                <div class="text-xl space-y-4 mb-6">
+                    <p>🌍 重力の影響を受けるようになる</p>
+                    <p>💥 衝突判定が機能するようになる</p>
+                    <p>🎯 物理的な動きをシミュレーション</p>
+                </div>
+                <div class="bg-red-900 bg-opacity-30 p-6 rounded-lg mb-4">
+                    <p class="text-red-400 font-bold text-xl mb-2">⚠️ 重要な設定</p>
+                    <p class="text-lg"><span class="highlight">Gravity Scale</span> を <span class="highlight">0</span> にする！</p>
+                    <p class="text-sm text-gray-400 mt-2">（重力で下に落ちないようにするため）</p>
+                </div>
+                <div class="term-box">
+                    <p class="text-lg">💡 衝突判定には<span class="highlight">少なくとも片方に</span>Rigidbody2Dが必要</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13: Trigger -->
+        <div class="slide">
+            <h1 class="slide-title">🎯 Trigger（Is Trigger）とは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6 text-center">すり抜ける<span class="highlight">当たり判定</span></p>
+                <div class="grid grid-cols-2 gap-8 mb-6">
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-3">通常のCollider</p>
+                        <p class="text-lg">物理的にぶつかる</p>
+                        <p class="text-sm text-gray-400 mt-2">壁に当たって止まる感じ</p>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-3">Is Trigger ON</p>
+                        <p class="text-lg">すり抜けて検出だけする</p>
+                        <p class="text-sm text-gray-400 mt-2">センサーのような感じ</p>
+                    </div>
+                </div>
+                <div class="term-box">
+                    <p class="text-lg">💡 Collider2Dの Inspector で <span class="highlight">Is Trigger</span> にチェックを入れるとTriggerになる</p>
+                    <p class="text-sm text-gray-400 mt-2">弾など「当たったことだけ検知したい」ときに使う</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14: Tag詳細 -->
+        <div class="slide">
+            <h1 class="slide-title">🏷️ Tagとは？</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-6xl">
+                <div class="card">
+                    <p class="text-2xl mb-6">オブジェクトに<span class="highlight">ラベル</span>を付ける機能</p>
+                    <div class="text-xl space-y-4 mb-4">
+                        <p>🏷️ 「これは敵」「これはアイテム」と識別できる</p>
+                        <p>🔍 スクリプトからタグで検索・判定できる</p>
+                        <p>📝 今回は隕石に<span class="highlight">"Falling"</span>タグを付ける</p>
+                    </div>
+                    <div class="term-box mt-2">
+                        <p class="text-lg"><span class="highlight">CompareTag()</span> を使うと高速かつ安全に判定できる</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl mb-6">タグの設定方法（Inspector）</h3>
+                    <div class="text-xl space-y-4 mb-4">
+                        <p><span class="highlight">1.</span> 隕石を選択</p>
+                        <p><span class="highlight">2.</span> Inspector上部の Tag → 「Add Tag...」</p>
+                        <p><span class="highlight">3.</span> 「Falling」を新規追加</p>
+                        <p><span class="highlight">4.</span> 隕石を再選択 → Tag で「Falling」を選ぶ</p>
+                    </div>
+                    <div class="term-box mt-2">
+                        <p class="text-lg">💡 使う前に必ずタグを「追加 → 割り当て」まで行う</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15: Componentの設定チェックリスト -->
+        <div class="slide">
+            <h1 class="slide-title">🔧 Componentの設定</h1>
+            <div class="card max-w-5xl">
+                <h3 class="text-2xl mb-6">忘れずに設定しよう！</h3>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-4">Playerの設定</p>
+                        <ul class="text-lg space-y-2">
+                            <li>✅ Rigidbody2Dを追加</li>
+                            <li>✅ Gravity Scale → <span class="highlight">0</span></li>
+                            <li>✅ BoxCollider2Dを追加</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                        <p class="text-primary font-bold text-xl mb-4">隕石の設定</p>
+                        <ul class="text-lg space-y-2">
+                            <li>✅ Tag → <span class="highlight">Falling</span></li>
+                            <li>✅ Rigidbody2Dを追加</li>
+                            <li>✅ Gravity Scale → <span class="highlight">0</span></li>
+                            <li>✅ CircleCollider2Dを追加</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-center text-gray-400 mt-6 text-lg">Hierarchyで選ぶ → Inspectorで設定、の流れを慣れよう</p>
+            </div>
+        </div>
+
+        <!-- 16: Prefab -->
+        <div class="slide">
+            <h1 class="slide-title">📋 Prefabとは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-3xl mb-8 text-center">GameObjectの<span class="highlight">「設計図」</span></p>
+                <div class="text-6xl mb-8 text-center">🌑 → 📋 → 🌑🌑🌑🌑🌑</div>
+                <div class="text-xl space-y-4 mb-6">
+                    <p>📝 1つ作れば、同じものを何個でも作れる</p>
+                    <p>✏️ Prefabを編集すると、全部に反映される</p>
+                    <p>💾 再利用できるテンプレートとして保存</p>
+                </div>
+                <h3 class="text-2xl mb-4">Prefabの作り方（エディタ操作）</h3>
+                <ol class="text-lg space-y-2">
+                    <li>1. Hierarchyの隕石を選択</li>
+                    <li>2. Projectウィンドウにドラッグ&ドロップ</li>
+                    <li>3. 📋マークがついたらPrefab完成！</li>
+                    <li>4. Projectからシーンへドラッグで複製配置</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 17: Canvas -->
+        <div class="slide">
+            <h1 class="slide-title">📺 Canvasとは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">UI（ユーザーインターフェース）を<span class="highlight">表示する場所</span></p>
+                <div class="text-xl space-y-4 mb-6">
+                    <p>🖼️ 画面上にテキストやボタンを配置するための土台</p>
+                    <p>📱 画面サイズが変わっても自動で調整される</p>
+                    <p>🎨 スコア、HP、メニューなど全てのUIをここに配置</p>
+                </div>
+                <h3 class="text-2xl mb-4">Canvasの作り方</h3>
+                <ol class="text-lg space-y-2">
+                    <li>1. Hierarchy右クリック → UI → Canvas</li>
+                    <li>2. Canvas Scalerを設定（画面サイズに合わせて自動調整）</li>
+                </ol>
+                <div class="term-box mt-4">
+                    <p class="text-lg"><span class="highlight">UI</span> = User Interface（ユーザーが見る画面の情報）</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 18: TextMeshPro -->
+        <div class="slide">
+            <h1 class="slide-title">📝 TextMeshProとは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">画面に<span class="highlight">文字を表示</span>するUIコンポーネント</p>
+                <div class="text-xl space-y-4 mb-6">
+                    <p>✍️ スコア、タイマー、メッセージなどを表示</p>
+                    <p>🎨 フォント、サイズ、色を自由に変更できる</p>
+                    <p>📍 画面の好きな位置に配置できる</p>
+                </div>
+                <h3 class="text-2xl mb-4">Textの作り方</h3>
+                <ol class="text-lg space-y-2">
+                    <li>1. Canvas右クリック → UI → Text - TextMeshPro</li>
+                    <li>2. 初回は「Import TMP Essentials」をクリック</li>
+                    <li>3. Inspectorで位置、サイズ、色を調整</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 19: よくあるミス（エディタ関連） -->
+        <div class="slide">
+            <h1 class="slide-title">🚨 よくあるミス</h1>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-6xl text-lg">
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-3">当たらない！</p>
+                    <p>✅ Collider2Dはある？<br>✅ Rigidbody2Dはある？<br>✅ Gravity Scaleは0？<br>✅ Is Triggerの設定は合ってる？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-3">ゲームオーバーにならない！</p>
+                    <p>✅ タグは「Falling」？<br>✅ Tagを追加してから割り当てた？<br>✅ CompareTagのスペルは合ってる？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-3">設定が効かない！</p>
+                    <p>✅ 正しいオブジェクトを選択してる？<br>✅ Play中の変更は停止すると戻る<br>✅ PrefabならPrefab自体を編集した？</p>
+                </div>
+                <div class="card">
+                    <p class="text-red-400 font-bold text-xl mb-3">NullReferenceException</p>
+                    <p>✅ Inspectorで設定忘れてない？<br>✅ 変数にオブジェクトをドラッグした？<br>✅ スクリプトはアタッチした？</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 20: 終了 -->
+        <div class="slide">
+            <div class="emoji-big">✅</div>
+            <h1 class="slide-title">エディタ操作の確認完了！</h1>
+            <p class="slide-subtitle">コード作業に戻ろう</p>
+            <div class="card max-w-3xl text-center mt-6">
+                <p class="text-xl">今日のキーワード</p>
+                <p class="text-2xl mt-4 text-primary font-bold">Component · Collider2D · Rigidbody2D · Tag · Prefab · Canvas</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function updateSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides.forEach((slide) => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            progress.style.width = ((index + 1) / totalSlides * 100) + '%';
+            currentSlide = index;
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                const el = document.documentElement;
+                (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen)?.call(el);
+            } else {
+                (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen)?.call(document);
+            }
+        }
+
+        const fsBtn = document.getElementById('btn-fullscreen');
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'f') toggleFullscreen();
+            if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) updateSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft' && currentSlide > 0) updateSlide(currentSlide - 1);
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            fsBtn.textContent = document.fullscreenElement ? '✕' : '⛶';
+            if (document.fullscreenElement) window.scrollTo(0, 0);
+        });
+
+        updateSlide(0);
+    </script>
+</body>
+</html>
