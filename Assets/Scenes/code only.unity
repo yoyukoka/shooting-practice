@@ -119,6 +119,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &131175967 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8838492286115291211, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
+  m_PrefabInstance: {fileID: 1661989910037583059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &131175973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131175967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c42ef1208de4b78a77412ba477e8de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 9190863236486935212}
+  meteoritesPrefab: {fileID: 414518187}
 --- !u!114 &335888321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -610,14 +629,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3924424480536149114, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 131175973}
+    - target: {fileID: 3924424480536149114, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 3924424480536149114, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ResetButton, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5213988687816202406, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 783149328164215447, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8838492286115291211, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 131175973}
   m_SourcePrefab: {fileID: 100100000, guid: f090ae371919d44e3bf855ac91bfdcce, type: 3}
 --- !u!1001 &3737169468295006687
 PrefabInstance:
@@ -630,6 +665,10 @@ PrefabInstance:
     - target: {fileID: 3489148942881396778, guid: e74d07971727040d08cf65e9f094b807, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489148942881396778, guid: e74d07971727040d08cf65e9f094b807, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 8599845405377134800, guid: e74d07971727040d08cf65e9f094b807, type: 3}
       propertyPath: m_Pivot.x
