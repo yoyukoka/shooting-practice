@@ -348,9 +348,47 @@ git clone https://github.com/yoyukoka/shooting-practice.git</div>
         </div>
 
         <div class="slide">
+            <h1 class="slide-title">✅ bool型とは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6"><span class="highlight">bool</span> は「はい / いいえ」だけを入れられる型</p>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg text-center">
+                        <p class="text-primary font-bold text-2xl mb-2">true</p>
+                        <p class="text-lg">はい・成立・オン</p>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg text-center">
+                        <p class="text-primary font-bold text-2xl mb-2">false</p>
+                        <p class="text-lg">いいえ・不成立・オフ</p>
+                    </div>
+                </div>
+                <div class="code-block">bool isGameOver = false;
+bool isKeyPressed = true;</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">数値や文字ではなく、<span class="highlight">2択の結果</span>だけを表す</p>
+                    <p class="text-lg mt-2">課題3の <span class="highlight">true / false</span> を埋める穴でも使う</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1 class="slide-title">🔀 if文とは？</h1>
+            <div class="card max-w-5xl">
+                <p class="text-2xl mb-6">条件が <span class="highlight">true</span> のときだけ、{ } の中を実行する</p>
+                <div class="code-block">if (条件)
+{
+    <span class="text-yellow-400">// 条件が true のときだけ実行</span>
+}</div>
+                <div class="term-box mt-4">
+                    <p class="text-lg">条件が <span class="highlight">false</span> なら、中身は<span class="highlight">スキップ</span>される</p>
+                    <p class="text-lg mt-2">次のスライドの <span class="highlight">Input.GetKey()</span> も、if の「条件」として使う</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
             <h1 class="slide-title">⌨️ Input.GetKey()とは？</h1>
             <div class="card max-w-5xl">
-                <p class="text-2xl mb-6">キーが<span class="highlight">押されている間</span>、true を返す</p>
+                <p class="text-2xl mb-6">キーが<span class="highlight">押されている間</span>、true を返す（= bool型）</p>
                 <div class="code-block">if (Input.GetKey(KeyCode.A)) {
     <span class="text-yellow-400">// Aキーが押されている間、ずっと実行</span>
 }</div>
